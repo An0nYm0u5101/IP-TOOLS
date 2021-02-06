@@ -26,7 +26,6 @@ if [[ $kontrol == 0 ]];then
 	sleep 1
 	pkg install nmap -y
 fi
-
 kontrol=$(which ip-scan |wc -l)
 if [[ $kontrol == 0 ]];then
 	echo -e "#/bin/bash
@@ -48,22 +47,23 @@ if [[ $kontrol == 0 ]];then
 else
 	kontrol=$(cat ip-scan |wc -l)
 	if [[ $kontrol != 3 ]];then
-	echo -e "#/bin/bash
-	cd \$HOME/.IP-SCAN
-	bash ip-scan.sh \$1" > $PREFIX/bin/ip-scan
-	chmod 777 $PREFIX/bin/ip-scan
-	cd ..
-	mv IP-SCAN .IP-SCAN
-	echo
-	echo
-	echo
-	printf "\e[32m[✓] \e[1;4;33mip-scan\e[0;97m KISAYOL OLUŞTURULDU"
-	echo
-	echo
-	echo
-	sleep 2
-	ip-scan
-	exit
+		echo -e "#/bin/bash
+		cd \$HOME/.IP-SCAN
+		bash ip-scan.sh \$1" > $PREFIX/bin/ip-scan
+		chmod 777 $PREFIX/bin/ip-scan
+		cd ..
+		mv IP-SCAN .IP-SCAN
+		echo
+		echo
+		echo
+		printf "\e[32m[✓] \e[1;4;33mip-scan\e[0;97m KISAYOL OLUŞTURULDU"
+		echo
+		echo
+		echo
+		sleep 2
+		ip-scan
+		exit
+	fi
 fi
 cd files
 clear
