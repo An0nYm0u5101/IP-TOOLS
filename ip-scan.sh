@@ -1,5 +1,9 @@
 #!/bin/bash
-clear
+if [[ $1 == güncelle ]];then
+	cd files
+	bash güncelleme.sh güncelle
+	exit
+fi
 kontrol=$(which curl |wc -l)
 if [[ $kontrol == 0 ]];then
 	echo
@@ -9,17 +13,47 @@ if [[ $kontrol == 0 ]];then
 	echo
 	echo
 	echo
+	sleep 1
 	pkg install curl -y
 fi
+kontrol=$(which nmap |wc -l)
+if [[ $kontrol == 0 ]];then
+	echo
+	echo
+	printf "\e[32m[*]\e[0m NMAP PAKETİ KURULUYOR.."
+	echo
+	echo
+	sleep 1
+	pkg install nmap -y
+fi
+
 kontrol=$(which ip-scan |wc -l)
 if [[ $kontrol == 0 ]];then
-	if [[ -a ip-scan.sh ]];then
-		mv ip-scan.sh $PREFIX/bin/ip-scan
-	fi
-	if [[ -a ip-scan ]];then
-		mv ip-scan $PREFIX/bin/ip-scan
-	fi
+	echo -e "#/bin/bash
+	cd \$HOME/.IP-SCAN
+	bash ip-scan.sh \$1" > $PREFIX/bin/ip-scan
 	chmod 777 $PREFIX/bin/ip-scan
+	cd ..
+	mv IP-SCAN .IP-SCAN
+	echo
+	echo
+	echo
+	printf "\e[32m[✓] \e[1;4;33mip-scan\e[0;97m KISAYOL OLUŞTURULDU"
+	echo
+	echo
+	echo
+	sleep 2
+	ip-scan
+	exit
+else
+	kontrol=$(cat ip-scan |wc -l)
+	if [[ $kontrol != 3 ]];then
+	echo -e "#/bin/bash
+	cd \$HOME/.IP-SCAN
+	bash ip-scan.sh \$1" > $PREFIX/bin/ip-scan
+	chmod 777 $PREFIX/bin/ip-scan
+	cd ..
+	mv IP-SCAN .IP-SCAN
 	echo
 	echo
 	echo
@@ -31,34 +65,70 @@ if [[ $kontrol == 0 ]];then
 	ip-scan
 	exit
 fi
-echo
-echo
-echo
-echo
-printf "\e[97m 
-            \e[97m██ ██████ \e[32m  ███████ ███████ ███████ ████████
-            \e[97m██ ██   █ \e[32m  ██      ██      ██   ██ ██    ██ 
-            \e[97m██ ██████ \e[32m  ███████ ██      ███████ ██    ██ 
-            \e[97m██ ██     \e[32m       ██ ██      ██   ██ ██    ██ 
-            \e[97m██ ██ \e[32m█████████████ ███████ ██   ██ ██    ██ 
-
-
-         \e[1;97m+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ >>
-              \e[33m|C|O|D|E|D| |B|Y| |U|M|U|T| |K|A|R|A|
-         \e[97m+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ >>\e[0m
-"
+cd files
+clear
+bash güncelleme.sh
+bash banner.sh
 if [[ $1 == "" ]];then
 	echo
 	echo
 	echo
+	printf "\e[97m
+                  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+\e[1;33m
+	                    |H|E|L|P|\e[0;97m
+  	          +-+-+-+-+-+-+-+-+-+-+-+-+-+-+\e[97m
+
+
+
+	              \e[32mip-scan\e[97m 216.58.212.46
+
+		      \e[32mip-scan\e[97m google.com
+
+		      \e[32mip-scan\e[97m --agtarama
+		      "
+	echo
+	echo
+	echo
+	echo
+	echo
+	echo
+	exit
+fi
+if [[ $1 == --agtarama ]];then
+	kontrol=$(ifconfig |grep -o "broadcast")
+	if [[ $kontrol == broadcast ]];then
+		echo
+	else
+		echo
+		echo
+		echo
+		printf "\e[31m[!]\e[0m KABLOSUZ AĞ BAĞLANTISI YOK \e[31m!!!\e[0m"
+		echo
+		echo
+		echo
+		exit
+	fi
+	nmapp=$(ifconfig |grep -o 192.168.[0-9] |sed -n 1p)
+	echo
+	echo
+	echo
+	printf "\e[32m[*]\e[0m NMAP AĞ TARAMASI YAPILIYOR.."
+	echo
+	echo
+	echo
+	sleep 2
+	#################### NMAP TARAMA ####################
+
 	printf "
-	\e[31m[!]\e[97m İP NUMARASI GİRİNİZ \e[31m!!!
-
-
-	\e[33m[*]\e[97m ip-scan 216.58.212.46"
+	\e[31m////////////////////////////////////////\e[32m"
 	echo
 	echo
 	echo
+	nmap $nmapp.0/24
+	echo
+	echo
+	echo
+	printf "\e[32m[✓]\e[0m NMAP AĞ TARAMASI TAMAMLANDI"
 	echo
 	echo
 	echo
@@ -70,7 +140,9 @@ if [[ $durum == fail ]];then
 	echo
 	echo
 	printf "
-	\e[31m[!] \e[1;4;33m$1\e[0;97m İP NUMARASI GEÇERSİZ \e[31m!!!\e[97m"
+	              \e[31m[!]\e[97m HATALI İP & DOMAİN \e[31m!!!\e[97m
+
+		              \e[33m$1\e[97m"
 	echo
 	echo
 	echo
