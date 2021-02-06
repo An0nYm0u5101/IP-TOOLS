@@ -28,9 +28,7 @@ if [[ $kontrol == 0 ]];then
 fi
 kontrol=$(which ip-scan |wc -l)
 if [[ $kontrol == 0 ]];then
-	echo -e "#/bin/bash
-	cd \$HOME/.IP-SCAN
-	bash ip-scan.sh \$1" > $PREFIX/bin/ip-scan
+	echo -e "#!/bin/bash\ncd \$HOME/.IP-SCAN\nbash ip-scan.sh \$1" > $PREFIX/bin/ip-scan
 	chmod 777 $PREFIX/bin/ip-scan
 	cd ..
 	mv IP-SCAN .IP-SCAN
@@ -45,11 +43,9 @@ if [[ $kontrol == 0 ]];then
 	ip-scan
 	exit
 else
-	kontrol=$(cat ip-scan |wc -l)
+	kontrol=$(cat $PREFIX/bin/ip-scan |wc -l)
 	if [[ $kontrol != 3 ]];then
-		echo -e "#/bin/bash
-		cd \$HOME/.IP-SCAN
-		bash ip-scan.sh \$1" > $PREFIX/bin/ip-scan
+		echo -e "#!/bin/bash\ncd \$HOME/.IP-SCAN\nbash ip-scan.sh \$1" > $PREFIX/bin/ip-scan
 		chmod 777 $PREFIX/bin/ip-scan
 		cd ..
 		mv IP-SCAN .IP-SCAN
