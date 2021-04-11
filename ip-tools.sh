@@ -65,7 +65,6 @@ if [[ $kontrol == 0 ]];then
 	echo
 	echo
 	exit
-else
 fi
 cd files
 bash güncelleme.sh
