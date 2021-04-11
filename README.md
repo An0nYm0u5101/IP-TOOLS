@@ -1,6 +1,6 @@
 ip-scan
 
-Güncelleme 12.02.2021
+Güncelleme 11.04.2021
 
 GİTHUB    : https://github.com/termuxxtoolss 
 
