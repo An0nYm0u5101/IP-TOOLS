@@ -1,7 +1,5 @@
 ip-scan
 
-Güncelleme 11.04.2021
-
 GİTHUB    : https://github.com/termuxxtoolss 
 
 TELEGRAM  : https://t.me/termuxxtoolss

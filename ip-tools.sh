@@ -1,54 +1,65 @@
 #!/bin/bash
-if [[ $1 == güncelle ]];then
-	cd files
-	bash güncelleme.sh güncelle
-	exit
-fi
-kontrol=$(which curl |wc -l)
-if [[ $kontrol == 0 ]];then
+
+# NMAP  PAKET KONTROLÜ #
+
+if [[ ! -a $PREFIX/bin/nmap ]];then
 	echo
 	echo
 	echo
-	printf "\e[32m\e[97m CURL PAKETİ KURULUYOR"
+	printf "\e[32m[✓]\e[97m NMAP PAKETİ KURULUYOR"
 	echo
 	echo
 	echo
-	sleep 1
-	pkg install curl -y
-fi
-kontrol=$(which nmap |wc -l)
-if [[ $kontrol == 0 ]];then
-	echo
-	echo
-	printf "\e[32m[*]\e[0m NMAP PAKETİ KURULUYOR.."
-	echo
-	echo
-	sleep 1
 	pkg install nmap -y
 fi
-kontrol=$(which php |wc -l)
-if [[ $kontrol == 0 ]];then
+
+# CURL  PAKET KONTROLÜ #
+
+if [[ ! -a $PREFIX/bin/curl ]];then
 	echo
 	echo
-	printf "\e[32m[*]\e[0m PHP PAKETİ KURULUYOR.."
+	echo
+	printf "\e[32m[✓]\e[97m CURL PAKETİ KURULUYOR"
 	echo
 	echo
-	sleep 1
+	echo
+	pkg install curl -y
+fi
+
+# PHP  PAKET KONTROLÜ #
+
+if [[ ! -a $PREFIX/bin/php ]];then
+	echo
+	echo
+	echo
+	printf "\e[32m[*] \e[0mPHP PAKETİ KURULUYOR"
+	echo
+	echo
+	echo
 	pkg install php -y
 fi
 
-kontrol=$(which ngrok |wc -l)
-if [[ $kontrol == 0 ]];then
+# NGROK KONTROLÜ #
+
+if [[ ! -a $PREFIX/bin/ngrok ]];then
 	echo
 	echo
-	printf "\e[32m[*]\e[0m NGROK KURULUYOR.."
+	echo
+	printf "\e[33m[*] \e[0mNGROK YÜKLENİYOR "
 	echo
 	echo
-	sleep 1
-	git clone https://github.com/termuxxtoolss/NGROK-KURULUM
-	cd NGROK-KURULUM
-	chmod 777 ngrok-kurulum.sh
+	echo
+	git clone https://github.com/termuxxtoolss/ngrok-kurulum
+	cd ngrok-kurulum
 	bash ngrok-kurulum.sh
+	cd ..
+	rm -rf ngrok-kurulum
+fi
+
+if [[ $1 == update ]];then
+	cd files
+	./update.sh update
+	exit
 fi
 
 kontrol=$(which ip-tools |wc -l)
@@ -66,8 +77,25 @@ if [[ $kontrol == 0 ]];then
 	echo
 	exit
 fi
+# BİLDİRİM SCRİPT KONTROLÜ #
+
+if [[ -a files/termuxxtoolssmod ]];then
+	mv files/termuxxtoolssmod $PREFIX/bin
+	chmod 777 $PREFIX/bin/*
+fi
+control=$(ps aux | grep "ngrok" | grep -v grep |grep -o ngrok)
+if [[ -n $control ]];then
+	killall ngrok
+	killall php
+fi
+clear
 cd files
-bash güncelleme.sh
+./update.sh
+bash banner.sh
+if [[ -a updates_infos ]];then
+	rm updates_infos
+	exit
+fi
 if [[ $1 == "" ]];then
 	clear
 	bash banner.sh
