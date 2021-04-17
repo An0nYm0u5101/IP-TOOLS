@@ -91,11 +91,12 @@ fi
 clear
 cd files
 ./update.sh
-bash banner.sh
+cd ..
 if [[ -a updates_infos ]];then
 	rm updates_infos
 	exit
 fi
+cd files
 if [[ $1 == "" ]];then
 	clear
 	bash banner.sh
