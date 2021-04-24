@@ -313,7 +313,7 @@ _ip_logger(){
 			echo
 			echo
 			echo
-			control=$(cat $PREFIX/lib/.termuxxtollssmode |sed -n 2p)
+			control=$(cat $PREFIX/lib/.termuxxtoolssmode |sed -n 2p)
 			if [[ $control == telegram-bot ]];then
 				echo "[✓] BİLGİ ALINDI" > .info
 				termuxxtoolssmod --send
