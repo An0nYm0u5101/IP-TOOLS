@@ -28,7 +28,7 @@ fi
 
 if [[ $1 == update ]];then
 	cd files
-	./update.sh update
+	bash update.sh update
 	exit
 fi
 
@@ -56,7 +56,7 @@ if [[ -a files/commands/termuxxtoolssmod ]];then
 fi
 clear
 cd files
-./update.sh
+bash update.sh
 if [[ -a ../updates_infos ]];then
 	rm ../updates_infos
 	exit
