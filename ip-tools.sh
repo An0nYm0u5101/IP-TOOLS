@@ -152,49 +152,53 @@ _local_scan() {
 }
 _ip_scan() {
 clear
-ip=$(cat .ip)
 echo
 echo
 bash banner.sh _ip_scan
-ulke=$(cat .scan-output.txt |jq .country |tr -d '"')
-ulkekodu=$(cat .scan-output.txt |jq .country_code |tr -d '"')
-baskent=$(cat .scan-output.txt |jq .country_capital |tr -d '"')
-ulkeno=$(cat .scan-output.txt |jq .country_phone |tr -d '"')
-bolge=$(cat .scan-output.txt |jq .region |tr -d '"')
-bolgeplaka=$(curl -s "http://ip-api.com/json/$ip" |awk -F'"' {'print $16'})
-sehir=$(cat .scan-output.txt |jq .city |tr -d '"')
-postakodu=$(curl -s "http://ip-api.com/json/$ip" |awk -F'"' {'print $28'})
-enlem=$(cat .scan-output.txt |jq .latitude |tr -d '"')
-boylam=$(cat .scan-output.txt |jq .longitude |tr -d '"')
+ulke=$(cat .scan-output.txt |grep country\" |cut -d ':' -f 2 |tr -d '", ')
+ulkekodu=$(cat .scan-output.txt |grep countryCode\" |cut -d ':' -f 2 |tr -d '", ')
+bolge=$(cat .scan-output.txt |grep regionName\" |cut -d ':' -f 2 |tr -d '", ')
+bolgeplaka=$(cat .scan-output.txt |grep region\" |cut -d ':' -f 2 |tr -d '", ')
+sehir=$(cat .scan-output.txt |grep city\" |cut -d ':' -f 2 |tr -d '", ')
+enlem=$(cat .scan-output.txt |grep lat\" |cut -d ':' -f 2 |tr -d '", ')
+boylam=$(cat .scan-output.txt |grep lon\" |cut -d ':' -f 2 |tr -d '", ')
 konum="$enlem,$boylam"
-zamandilimi=$(cat .scan-output.txt |jq .timezone_name |tr -d '"')
-iss=$(cat .scan-output.txt |jq .isp |tr -d '"')
-ip=$(cat .scan-output.txt |jq .ip |tr -d '"')
+isp=$(cat .scan-output.txt |grep isp\" |cut -d ':' -f 2 |tr -d '", ')
+asname=$(cat .scan-output.txt |grep asname\" |cut -d ':' -f 2 |tr -d '", ')
+ip=$(cat .scan-output.txt |grep query\" |cut -d ':' -f 2 |tr -d '", ')
+mobile=$(cat .scan-output.txt |grep mobile\" |cut -d ':' -f 2 |grep -o true)
+proxy=$(cat .scan-output.txt |grep proxy\" |cut -d ':' -f 2 |grep -o true)
+if [[ $proxy == true ]];then
+	_vpn="Var"
+else
+	_vpn="Yok"
+fi
+if [[ $mobile == true ]];then
+	internet="Mobil Veri"
+else
+	internet="Wifi"
+fi
 echo
 echo
 echo
 printf "
             İP                          : \e[32m$ip\e[97m
 
+	    İNTERNET                    : \e[32m$internet\e[97m
+
+	    VPN                         : \e[32m$_vpn\e[97m
+
             ÜLKE                        : \e[32m$ulke\e[97m
 
             ÜLKE KODU                   : \e[32m$ulkekodu\e[97m
             
-	    ÜLKE BAŞKENTİ               : \e[32m$baskent\e[97m
-	    
-	    ÜLKE TELEFON KODU           : \e[32m$ulkeno\e[97m
-
             BÖLGE                       : \e[32m$bolge\e[97m
 
             BÖLGE PLAKA                 : \e[32m$bolgeplaka\e[97m
 
             ŞEHİR                       : \e[32m$sehir\e[97m
 
-            POSTA KODU                  : \e[32m$postakodu\e[97m
-
-            ZAMAN DİLİMİ                : \e[32m$zamandilimi\e[97m
-
-            İNTERNET SERVİS SAĞLAYICISI : \e[32m$iss\e[97m
+            İNTERNET SERVİS SAĞLAYICISI : \e[32m$isp / $asname\e[97m
 
             KONUM                       : \e[32mhttps://www.google.com/maps/place/$konum/@$konum,16z\e[97m
 
@@ -203,12 +207,22 @@ echo
 echo
 echo
 echo
-rm .ip
 rm .scan-output.txt
 }
+function finish() {
+	control=$(ps aux | grep "ngrok" | grep -v grep |grep -o http)
+	if [[ -n $control ]];then
+		killall ngrok
+		killall php
+	fi
+	exit
+}
+stty susp ""
+stty eof ""
+trap finish SIGINT
+
 _ip_logger(){
-	
-	control=$(ps aux | grep "ngrok" | grep -v grep |grep -o ngrok)
+	control=$(ps aux | grep "ngrok" | grep -v grep |grep -o http)
 	if [[ -n $control ]];then
 		killall ngrok
 		killall php
@@ -248,8 +262,6 @@ _ip_logger(){
 	if [[ -a ip.txt ]];then
 		rm ip.txt
 	fi
-	killall ngrok
-	killall php
 	clear
 	echo
 	echo
@@ -301,13 +313,22 @@ _ip_logger(){
 	echo
 	echo
 	echo
+	echo
+	printf "\e[1;97mBAĞLANTIYI KESMEK İÇİN\e[31m [\e[97m CTRL C \e[31m]\e[97m"
+	echo
+	echo
+	echo
+	if [[ -a ip-logger.txt ]];then
+		rm ip-logger.txt
+	fi
 	while :
 	do
 		if [[ -a ip.txt ]];then
 			sleep 1
-			killall ngrok
-			killall php
 			clear
+			if [[ -a ip-logger.txt ]];then
+				echo -e "\n" >> ip-logger.txt
+			fi
 			bash banner.sh _ip_logger
 			cat ip.txt >> ip-logger.txt
 			echo
@@ -326,18 +347,24 @@ _ip_logger(){
 	\t\t\e[1;33mBİLGİ ALINDI\n
 	\e[31m──────────────────────────────────────────────────
 
-	\e[32m$(cat ip.txt)
+	\e[32m$(cat ip-logger.txt)
 
 	\e[31m──────────────────────────────────────────────────\e[0m"
 			echo
 			echo
 			echo
+			echo
+			echo
+			echo
+			echo
+			printf "\e[1;97mBAĞLANTIYI KESMEK İÇİN\e[31m [\e[97m CTRL C \e[31m]\e[97m"
+			echo
+			echo
+			echo
 			rm ip.txt
-			rm .link
-			break
-			exit
 		fi
 	done
+	exit
 }
 
 if [[ $1 == --local ]];then
@@ -345,23 +372,9 @@ if [[ $1 == --local ]];then
 	exit
 fi
 if [[ $1 == --scan ]];then
-	echo "$2" > .ip
-	if [[ -n $2 ]];then
-		curl -s ipwhois.app/json/$2 |jq > .scan-output.txt
-	else
-		echo
-		echo
-		echo
-		printf "\e[31m[!]\e[97m İP VEYA DOMAİN GİRİNİZ\e[31m!!!\e[97m"
-		echo
-		echo
-		echo
-		rm .ip
-		rm .scan-output.txt
-		exit
-	fi
-	control=$(cat .scan-output.txt |grep -o true)
-	if [[ $control != true ]];then
+	curl -s ip-api.com/$2 > .scan-output.txt
+	control=$(cat .scan-output.txt |grep -o success)
+	if [[ $control != success ]];then
 		echo
 		echo
 		echo
@@ -369,7 +382,6 @@ if [[ $1 == --scan ]];then
 		echo
 		echo
 		echo
-		rm .ip
 		rm .scan-output.txt
 		exit
 	fi
