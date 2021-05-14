@@ -28,7 +28,7 @@ fi
 
 if [[ $1 == update ]];then
 	cd files
-	bash update.sh update
+	bash update.sh update $2
 	exit
 fi
 
