@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# NMAP  PAKET KONTROLÜ #
+## NMAP  PAKET KONTROLÜ #
 
 if [[ ! -a $PREFIX/bin/nmap ]];then
 	echo
