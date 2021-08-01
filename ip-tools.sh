@@ -85,13 +85,6 @@ if [[ $kontrol == 0 ]];then
 	echo
 	exit
 fi
-# COMMANDS SCRİPT CONTROLS #
-
-if [[ -a files/commands/termuxxtoolssmod ]];then
-	mv files/commands/termuxxtoolssmod $PREFIX/bin
-	mv files/commands/link-create $PREFIX/bin
-	chmod 777 $PREFIX/bin/*
-fi
 clear
 cd files
 
