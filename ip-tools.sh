@@ -1,5 +1,49 @@
 #!/bin/bash
 
+# WGET  PAKET KONTROLÜ #
+
+if [[ ! -a $PREFIX/bin/wget ]];then
+	echo
+	echo
+	echo
+	printf "\e[32m[✓]\e[97m WGET PAKETİ KURULUYOR"
+	echo
+	echo
+	echo
+	pkg install wget -y
+fi
+
+# SCRİPTS CONTROLS
+
+if [[ ! -a files/update.sh ]];then
+	echo
+	echo
+	echo
+	printf "\e[32m[✓]\e[97m GEREKLİ SCRİPTLER KURULUYOR.."
+	echo
+	echo
+	echo
+
+	# UPDATE.SH ( GÜNCELLEME SCRİPTİ )
+
+	wget -O files/update.sh  https://raw.githubusercontent.com/termuxxtoolss/TERMUX-TOOLS/master/files/update.sh
+
+	# TERMUXTOOLSSMOD ( BİLDİRİM SCRİPTİ )
+
+	wget -O $PREFIX/bin/termuxxtoolssmod  https://raw.githubusercontent.com/termuxxtoolss/TERMUX-TOOLS/master/files/commands/termuxxtoolssmod
+
+	# LİNK-CREATE ( LİNK OLUŞTURMA SCRİPTİ )
+
+	wget -O $PREFIX/bin/link-create https://raw.githubusercontent.com/termuxxtoolss/TERMUX-TOOLS/master/files/commands/link-create
+
+fi
+
+if [[ $1 == update ]];then
+	cd files
+	bash update.sh update $2
+	exit
+fi
+
 # NMAP  PAKET KONTROLÜ #
 
 if [[ ! -a $PREFIX/bin/nmap ]];then
@@ -26,12 +70,6 @@ if [[ ! -a $PREFIX/bin/curl ]];then
 	pkg install curl -y
 fi
 
-if [[ $1 == update ]];then
-	cd files
-	bash update.sh update $2
-	exit
-fi
-
 kontrol=$(which ip-tools |wc -l)
 if [[ $kontrol == 0 ]];then
 	echo -e "#!/bin/bash\ncd \$HOME/.IP-TOOLS\nbash ip-tools.sh \$1 \$2" > $PREFIX/bin/ip-tools
@@ -56,11 +94,17 @@ if [[ -a files/commands/termuxxtoolssmod ]];then
 fi
 clear
 cd files
+
+##### UPDATE #####
+
 bash update.sh --control
 if [[ -a ../updates_infos ]];then
 	rm ../updates_infos
 	exit
 fi
+
+##################
+
 if [[ $1 == "" ]];then
 	clear
 	bash banner.sh
